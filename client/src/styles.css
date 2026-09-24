@@ -99,6 +99,21 @@ code {
   padding: 8px 16px;
   font-size: 13px;
 }
+.banner.warn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #3a311d;
+  color: #ffd98a;
+}
+.banner-close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
 .banner.error {
   background: #3a1d1f;
   color: #ffb4b4;

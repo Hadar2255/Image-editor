@@ -20,7 +20,8 @@ npm run dev
 פתחו את http://localhost:5173 וגררו קובץ RAW אחד או יותר לחלון (או לחצו **Open RAW…**).
 
 - `npm run dev` מריץ שני תהליכים: שרת ה-API (Express, פורט 8787) ו-Vite (פורט 5173), ש-proxy-מעביר אליו את `/api`.
-- הרצת production: `npm run build && npm start` ← האפליקציה כולה מוגשת מ-http://localhost:8787.
+- הרצת production מקומית: `npm run build && npm start` ← האפליקציה כולה מוגשת מ-http://localhost:8787.
+- אין לכם מחשב? ראו [העלאה ל-Vercel](#העלאה-ל-vercel-עובד-גם-מאייפדטלפון).
 
 ### משתני סביבה (`.env`)
 
@@ -29,6 +30,22 @@ npm run dev
 | `ANTHROPIC_API_KEY` | מפתח Claude API. נשמר בשרת בלבד ולא נשלח לדפדפן | — |
 | `CLAUDE_MODEL` | המודל לניתוח תמונות ולבקשות בשפה חופשית | `claude-sonnet-5` |
 | `PORT` | פורט שרת ה-API | `8787` |
+
+## העלאה ל-Vercel (עובד גם מאייפד/טלפון)
+
+כל ההגדרות כבר בריפו (`vercel.json` + `scripts/build-vercel.mjs`). הבנייה יוצרת תיקיית `.vercel/output` מוכנה:
+האתר הסטטי, שרת ה-API כפונקציה אחת, וכותרות ה-COOP/COEP שהמפענח צריך.
+
+1. היכנסו ל-[vercel.com](https://vercel.com) ← **Sign Up** ← **Continue with GitHub**.
+2. **Add New… → Project** ← בחרו את הריפו `image-editor` (אם הוא לא מופיע: **Adjust GitHub App Permissions** ותנו גישה לריפו).
+3. במסך ההגדרות לא צריך לשנות כלום (Framework Preset: **Other**, הבנייה נלקחת מ-`vercel.json`).
+4. תחת **Environment Variables** הוסיפו `ANTHROPIC_API_KEY` (נדרש משלב 3) ואופציונלית `CLAUDE_MODEL`.
+5. **Deploy**.
+
+- כל push לענף מקבל כתובת **Preview** משלו (ב-Vercel תחת **Deployments**). ה-**Production** נבנה מ-`main`.
+- כתובות Preview מוגנות כברירת מחדל ב-Vercel Authentication — נפתחות רק כשאתם מחוברים ל-Vercel באותו דפדפן.
+- באייפד: שמרו את קבצי ה-ARW באפליקציית **Files** ובחרו אותם דרך **Open RAW…** ← **Browse**.
+  בחירה מ-"ספריית התמונות" עלולה להמיר את הקובץ ל-JPEG.
 
 ## בדיקות
 
@@ -46,6 +63,8 @@ npm run test:e2e    # בדיקת קצה-לקצה ב-Chromium headless (דורש 
 ```
 client/   React + Vite + TypeScript — פענוח RAW, רינדור GPU, ממשק
 server/   Express — פרוקסי ל-Claude API (מחזיק את המפתח), ובייצור מגיש גם את ה-client
+          (src/app.ts משותף לשרת המקומי ולפונקציה של Vercel)
+scripts/  build-vercel.mjs — בונה את .vercel/output לפריסה
 shared/   קוד משותף ללקוח ולשרת (סכמת הפרמטרים וכו')
 e2e/      בדיקות קצה-לקצה עם Playwright
 ```

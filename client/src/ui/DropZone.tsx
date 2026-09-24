@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { RAW_EXTENSIONS } from '../raw/rawLoader.ts';
 
 /** Whole-window drop target with a highlight overlay while dragging files. */
 export function DropZone({ onFiles, children }: { onFiles: (files: File[]) => void; children: ReactNode }) {
@@ -72,7 +71,8 @@ export function FilePickerButton({
         type="file"
         multiple
         hidden
-        accept={RAW_EXTENSIONS.map((e) => `.${e}`).join(',')}
+        // No `accept` filter: iOS/iPadOS greys out RAW files whose type it can't map.
+        // Files are filtered by extension after picking instead.
         onChange={(e) => {
           onFiles(Array.from(e.target.files ?? []));
           e.target.value = '';
