@@ -2,12 +2,16 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import { CROSS_ORIGIN_ISOLATION_HEADERS } from '@raw/shared';
+import { aiRouter } from './aiRoutes.ts';
+import { DEFAULT_MODEL } from './claude/client.ts';
 
 /** The API, shared by the local/production Node server and the Vercel function. */
 export function createApp({ serveClient = false } = {}) {
   const app = express();
 
   app.disable('x-powered-by');
+  // Behind Vercel's / a reverse proxy's load balancer: use X-Forwarded-For for the client IP.
+  app.set('trust proxy', true);
   app.use((_req, res, next) => {
     res.set(CROSS_ORIGIN_ISOLATION_HEADERS);
     next();
@@ -18,9 +22,12 @@ export function createApp({ serveClient = false } = {}) {
     res.json({
       ok: true,
       claudeConfigured: Boolean(process.env.ANTHROPIC_API_KEY),
-      model: process.env.CLAUDE_MODEL || 'claude-sonnet-5',
+      model: process.env.CLAUDE_MODEL || DEFAULT_MODEL,
+      passwordRequired: Boolean(process.env.APP_PASSWORD),
     });
   });
+
+  app.use('/api/ai', aiRouter());
 
   app.use('/api', (_req, res) => {
     res.status(404).json({ error: 'Not found' });

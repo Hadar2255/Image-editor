@@ -58,7 +58,7 @@ export function Toolbar({ photoId }: { photoId: string | null }) {
         ◐<span className="btn-text">Hold</span>
       </button>
       <span className="toolbar-sep" />
-      <button className="icon-btn" disabled={disabled || !isEdited} onClick={() => photoId && reset(photoId)} title="Reset all edits">
+      <button className="icon-btn" disabled={disabled || !isEdited} onClick={() => photoId && reset(photoId)} title="Reset to the automatic edit">
         ⟲<span className="btn-text">Reset</span>
       </button>
       {zoomPercent !== null && <span className="zoom-readout">{Math.round(zoomPercent * 100)}%</span>}

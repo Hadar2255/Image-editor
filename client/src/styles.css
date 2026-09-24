@@ -686,3 +686,108 @@ code {
     display: none;
   }
 }
+
+/* ---------- auto edit ---------- */
+.auto-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+.auto-icon {
+  color: var(--accent);
+  width: 12px;
+  text-align: center;
+}
+.reasoning {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #c9cbd1;
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  margin: 6px 0 10px;
+}
+.error-text {
+  color: var(--danger);
+}
+.notice {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12.5px;
+  background: rgba(76, 154, 255, 0.1);
+  border: 1px solid rgba(76, 154, 255, 0.35);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  margin: 6px 0 10px;
+}
+.notice-actions,
+.button-row {
+  display: flex;
+  gap: 6px;
+}
+.button-row {
+  margin: 8px 0;
+}
+.button-row.wrap {
+  flex-wrap: wrap;
+}
+.btn.small {
+  padding: 5px 10px;
+  font-size: 12.5px;
+}
+.btn.small.primary {
+  padding: 5px 12px;
+}
+.btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.prompt-box {
+  margin-top: 10px;
+}
+.prompt-row {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+}
+.prompt-row textarea {
+  flex: 1;
+  resize: vertical;
+  min-height: 40px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 7px 9px;
+  font: inherit;
+  font-size: 13px;
+}
+.prompt-row textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.chip {
+  border: 1px solid var(--border);
+  background: var(--bg-elev-2);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.chip:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
