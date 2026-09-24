@@ -18,9 +18,7 @@ export function InfoPanel({ photo }: { photo: Photo }) {
     ['Decode time', photo.decodeMs !== undefined ? `${(photo.decodeMs / 1000).toFixed(2)} s` : undefined],
   ];
   return (
-    <div className="panel">
-      <h2 className="panel-title">Info</h2>
-      <dl className="info-list">
+    <dl className="info-list">
         {rows
           .filter(([, v]) => v)
           .map(([k, v]) => (
@@ -29,7 +27,6 @@ export function InfoPanel({ photo }: { photo: Photo }) {
               <dd>{v}</dd>
             </div>
           ))}
-      </dl>
-    </div>
+    </dl>
   );
 }

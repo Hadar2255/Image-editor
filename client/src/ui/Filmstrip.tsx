@@ -1,5 +1,6 @@
 import { usePhotoStore } from '../state/photoStore.ts';
 import { forgetPreview } from '../raw/decodeQueue.ts';
+import { useEditStore } from '../state/editStore.ts';
 
 export function Filmstrip() {
   const photos = usePhotoStore((s) => s.photos);
@@ -20,6 +21,7 @@ export function Filmstrip() {
             onClick={() => {
               forgetPreview(p.id);
               remove(p.id);
+              useEditStore.getState().remove(p.id);
             }}
           >
             ×
