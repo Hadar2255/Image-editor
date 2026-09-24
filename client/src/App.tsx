@@ -5,7 +5,8 @@ import { loadThumbnails } from './raw/decodeQueue.ts';
 import { DropZone, FilePickerButton } from './ui/DropZone.tsx';
 import { Viewer } from './ui/Viewer.tsx';
 import { Filmstrip } from './ui/Filmstrip.tsx';
-import { InfoPanel } from './ui/InfoPanel.tsx';
+import { EditPanel } from './ui/EditPanel.tsx';
+import { Toolbar } from './ui/Toolbar.tsx';
 
 export default function App() {
   const add = usePhotoStore((s) => s.add);
@@ -30,6 +31,7 @@ export default function App() {
           <div className="brand">
             <span className="brand-mark" aria-hidden>◐</span> RAW Studio
           </div>
+          {hasPhotos && <Toolbar photoId={active?.id ?? null} />}
           <div className="topbar-actions">
             <FilePickerButton onFiles={onFiles}>Open RAW…</FilePickerButton>
           </div>
@@ -56,7 +58,7 @@ export default function App() {
           <section className="viewer-area">
             {hasPhotos ? <Viewer photo={active} /> : <EmptyState onFiles={onFiles} />}
           </section>
-          <aside className="side-panel">{active && <InfoPanel photo={active} />}</aside>
+          <aside className="side-panel">{active && <EditPanel photo={active} />}</aside>
         </main>
 
         {hasPhotos && <Filmstrip />}
