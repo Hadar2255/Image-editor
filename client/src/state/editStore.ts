@@ -26,6 +26,8 @@ interface EditState {
   undo: (id: string) => void;
   redo: (id: string) => void;
   reset: (id: string) => void;
+  /** Set what "reset" returns to (the automatic edit); optionally apply it as one undo step. */
+  setBaseline: (id: string, params: EditParams, opts?: { apply?: boolean }) => void;
   remove: (id: string) => void;
 }
 
@@ -87,6 +89,10 @@ export const useEditStore = create<EditState>((set, get) => {
       put(id, { ...e, params: next, past: pushPast(e.past, e.params), future: e.future.slice(1), gestureBase: null });
     },
     reset: (id) => apply(id, structuredClone(edit(id).baseline)),
+    setBaseline: (id, params, opts) => {
+      put(id, { ...edit(id), baseline: params });
+      if (opts?.apply) apply(id, structuredClone(params));
+    },
     remove: (id) =>
       set((s) => {
         const { [id]: _removed, ...rest } = s.edits;

@@ -355,6 +355,52 @@ export class Renderer {
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
 
+  /**
+   * Renders `params` (without detail passes) into a JPEG whose long side is at
+   * most `maxSide`, e.g. for sending to Claude. The on-screen image is untouched.
+   */
+  async renderJpeg(params: EditParams, maxSide: number, quality = 0.85): Promise<Blob> {
+    const { gl } = this;
+    if (!this.image || !this.linearTex) throw new Error('No image loaded');
+    const { width, height } = this.image;
+    const target = this.createTarget(width, height, true);
+    let pixels: ImageData;
+    try {
+      this.developInto(target, params, false);
+      // Read the smallest mip level that is still at least `maxSide`, then scale on a 2D canvas.
+      const level = Math.max(0, Math.floor(Math.log2(Math.max(width, height) / maxSide)));
+      const w = Math.max(1, width >> level);
+      const h = Math.max(1, height >> level);
+      const fbo = gl.createFramebuffer();
+      gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, target.tex, level);
+      const data = new Uint8ClampedArray(w * h * 4);
+      gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, data);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      gl.deleteFramebuffer(fbo);
+      pixels = new ImageData(data, w, h);
+    } finally {
+      this.deleteTarget(target);
+      // The LUT textures now hold `params`; make the next frame re-upload the current ones.
+      this.developDirty = true;
+      this.requestRender();
+    }
+    const scale = Math.min(1, maxSide / Math.max(pixels.width, pixels.height));
+    const src = document.createElement('canvas');
+    src.width = pixels.width;
+    src.height = pixels.height;
+    src.getContext('2d')!.putImageData(pixels, 0, 0);
+    const out = document.createElement('canvas');
+    out.width = Math.round(pixels.width * scale);
+    out.height = Math.round(pixels.height * scale);
+    const ctx = out.getContext('2d')!;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(src, 0, 0, out.width, out.height);
+    return new Promise((resolve, reject) =>
+      out.toBlob((b) => (b ? resolve(b) : reject(new Error('JPEG encoding failed'))), 'image/jpeg', quality),
+    );
+  }
+
   /** Histogram of the developed image, read from a small mip level. */
   readHistogram(maxSide = 360): Histogram | null {
     const { gl } = this;
