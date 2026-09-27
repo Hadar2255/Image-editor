@@ -5,6 +5,8 @@ import { Renderer } from '../gl/Renderer.ts';
 import { FIT_VIEW, fitScale, panBy, pixelScale, zoomAt, clampView } from '../gl/viewMath.ts';
 import { useParams } from '../state/editStore.ts';
 import { useViewStore } from '../state/viewStore.ts';
+import { setActiveRenderer } from '../gl/activeRenderer.ts';
+import { runAutoEdit } from '../auto/autoEdit.ts';
 
 const HISTOGRAM_INTERVAL_MS = 120;
 const DOUBLE_TAP_MS = 300;
@@ -54,6 +56,7 @@ export function Viewer({ photo }: { photo: Photo | null }) {
     return () => {
       clearTimeout(histTimer);
       ro.disconnect();
+      setActiveRenderer(null);
       renderer.dispose();
       rendererRef.current = null;
     };
@@ -65,14 +68,18 @@ export function Viewer({ photo }: { photo: Photo | null }) {
     if (!photoId) return;
     let cancelled = false;
     setShownId(null);
+    if (rendererRef.current) setActiveRenderer(rendererRef.current, null);
     useViewStore.getState().setView(FIT_VIEW);
     useViewStore.getState().setHistogram(null);
     loadPreview(photoId)
       .then((img) => {
         if (cancelled || !rendererRef.current) return;
         try {
-          rendererRef.current.setImage(img);
+          const renderer = rendererRef.current;
+          renderer.setImage(img);
+          setActiveRenderer(renderer, photoId);
           setShownId(photoId);
+          void runAutoEdit(photoId, img, renderer);
         } catch (e) {
           setGlError(e instanceof Error ? e.message : String(e));
         }

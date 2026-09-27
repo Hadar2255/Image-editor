@@ -48,6 +48,17 @@ try {
     { timeout: 120_000 },
   );
   console.log(`developed preview after ${Date.now() - t0} ms`);
+  // Let the automatic edit settle (histogram edit, then Claude's if the server has a key).
+  await page.waitForFunction(
+    () => {
+      const s = document.querySelector('[data-testid=auto-status]')?.getAttribute('data-status');
+      return s && s !== 'analyzing';
+    },
+    null,
+    { timeout: 90_000 },
+  );
+  const auto = await page.$eval('[data-testid=auto-status]', (el) => el.textContent);
+  console.log(`auto edit: ${auto}`);
 
   const info = await page.$$eval('.info-row', (rows) => rows.map((r) => r.innerText.replace('\n', ': ')));
   console.log(info.join('\n'));
